@@ -1,0 +1,474 @@
+<!-- tools/color-converter.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>颜色转换器 - 实用工具箱</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <style>
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .color-preview {
+            width: 100%;
+            height: 200px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .color-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .color-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-family: monospace;
+            outline: none;
+        }
+        
+        .color-input:focus {
+            border-color: var(--accent);
+        }
+        
+        .color-picker-wrapper {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .color-picker {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .presets {
+            margin-bottom: 30px;
+        }
+        
+        .preset-title {
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+        
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+        }
+        
+        .preset-color {
+            width: 100%;
+            height: 60px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s;
+        }
+        
+        .preset-color:hover {
+            transform: scale(1.05);
+            border-color: var(--accent);
+        }
+        
+        .copy-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .copy-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 颜色转换器</h1>
+            <button class="tool-btn" onclick="toggleTheme()">🌙</button>
+        </div>
+        
+        <div class="color-preview" id="colorPreview">
+            <span id="previewText">选择颜色查看预览</span>
+        </div>
+        
+        <div class="color-inputs">
+            <div class="input-group">
+                <label class="input-label">HEX 颜色值</label>
+                <input type="text" class="color-input" id="hexInput" placeholder="#7c5cff" oninput="updateFromHex()">
+                <div class="color-picker-wrapper">
+                    <input type="color" class="color-picker" id="colorPicker" value="#7c5cff" oninput="updateFromPicker()">
+                    <button class="action-btn" onclick="randomColor()">随机颜色</button>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">RGB 颜色值</label>
+                <input type="text" class="color-input" id="rgbInput" placeholder="rgb(124, 92, 255)" oninput="updateFromRgb()">
+                <div style="margin-top: 10px; color: var(--text-muted); font-size: 14px;">
+                    格式: rgb(红, 绿, 蓝) 或 rgba(红, 绿, 蓝, 透明度)
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">HSL 颜色值</label>
+                <input type="text" class="color-input" id="hslInput" placeholder="hsl(249, 100%, 68%)" oninput="updateFromHsl()">
+                <div style="margin-top: 10px; color: var(--text-muted); font-size: 14px;">
+                    格式: hsl(色相, 饱和度%, 亮度%)
+                </div>
+            </div>
+        </div>
+        
+        <div class="copy-buttons">
+            <button class="copy-btn" onclick="copyColor('hex')">复制 HEX</button>
+            <button class="copy-btn" onclick="copyColor('rgb')">复制 RGB</button>
+            <button class="copy-btn" onclick="copyColor('hsl')">复制 HSL</button>
+        </div>
+        
+        <div class="presets">
+            <div class="preset-title">常用颜色</div>
+            <div class="preset-grid" id="presetGrid"></div>
+        </div>
+    </div>
+    
+    <script>
+        // 预设颜色
+        const presetColors = [
+            '#FF0000', '#FF4500', '#FF6347', '#FF7F50', '#FFA500',
+            '#FFD700', '#FFFF00', '#ADFF2F', '#7FFF00', '#00FF00',
+            '#00FA9A', '#00FFFF', '#00BFFF', '#1E90FF', '#0000FF',
+            '#8A2BE2', '#9400D3', '#FF00FF', '#FF1493', '#FF69B4'
+        ];
+        
+        let currentColor = {
+            hex: '#7c5cff',
+            r: 124,
+            g: 92,
+            b: 255,
+            h: 249,
+            s: 100,
+            l: 68
+        };
+        
+        // 初始化预设颜色
+        function initPresets() {
+            const grid = document.getElementById('presetGrid');
+            grid.innerHTML = presetColors.map(color => 
+                `<div class="preset-color" style="background-color: ${color}" 
+                      onclick="selectPreset('${color}')" title="${color}"></div>`
+            ).join('');
+        }
+        
+        // 选择预设颜色
+        function selectPreset(hex) {
+            document.getElementById('hexInput').value = hex;
+            updateFromHex();
+        }
+        
+        // 从HEX更新
+        function updateFromHex() {
+            let hex = document.getElementById('hexInput').value.trim();
+            
+            // 自动补全#
+            if (hex && !hex.startsWith('#')) {
+                hex = '#' + hex;
+            }
+            
+            // 验证HEX格式
+            if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+                currentColor.hex = hex;
+                const rgb = hexToRgb(hex);
+                currentColor.r = rgb.r;
+                currentColor.g = rgb.g;
+                currentColor.b = rgb.b;
+                
+                const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+                currentColor.h = hsl.h;
+                currentColor.s = hsl.s;
+                currentColor.l = hsl.l;
+                
+                updateAllInputs();
+                updatePreview();
+                document.getElementById('colorPicker').value = hex;
+            }
+        }
+        
+        // 从RGB更新
+        function updateFromRgb() {
+            const rgbStr = document.getElementById('rgbInput').value.trim();
+            const rgbMatch = rgbStr.match(/rgba?\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})/);
+            
+            if (rgbMatch) {
+                const r = parseInt(rgbMatch[1]);
+                const g = parseInt(rgbMatch[2]);
+                const b = parseInt(rgbMatch[3]);
+                
+                if (r <= 255 && g <= 255 && b <= 255) {
+                    currentColor.r = r;
+                    currentColor.g = g;
+                    currentColor.b = b;
+                    
+                    const hex = rgbToHex(r, g, b);
+                    currentColor.hex = hex;
+                    
+                    const hsl = rgbToHsl(r, g, b);
+                    currentColor.h = hsl.h;
+                    currentColor.s = hsl.s;
+                    currentColor.l = hsl.l;
+                    
+                    updateAllInputs();
+                    updatePreview();
+                    document.getElementById('colorPicker').value = hex;
+                }
+            }
+        }
+        
+        // 从HSL更新
+        function updateFromHsl() {
+            const hslStr = document.getElementById('hslInput').value.trim();
+            const hslMatch = hslStr.match(/hsl\((\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%\)/);
+            
+            if (hslMatch) {
+                const h = parseInt(hslMatch[1]);
+                const s = parseInt(hslMatch[2]);
+                const l = parseInt(hslMatch[3]);
+                
+                if (h <= 360 && s <= 100 && l <= 100) {
+                    currentColor.h = h;
+                    currentColor.s = s;
+                    currentColor.l = l;
+                    
+                    const rgb = hslToRgb(h, s, l);
+                    currentColor.r = rgb.r;
+                    currentColor.g = rgb.g;
+                    currentColor.b = rgb.b;
+                    
+                    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+                    currentColor.hex = hex;
+                    
+                    updateAllInputs();
+                    updatePreview();
+                    document.getElementById('colorPicker').value = hex;
+                }
+            }
+        }
+        
+        // 从颜色选择器更新
+        function updateFromPicker() {
+            const hex = document.getElementById('colorPicker').value;
+            document.getElementById('hexInput').value = hex;
+            updateFromHex();
+        }
+        
+        // 更新所有输入框
+        function updateAllInputs() {
+            document.getElementById('hexInput').value = currentColor.hex;
+            document.getElementById('rgbInput').value = `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`;
+            document.getElementById('hslInput').value = `hsl(${currentColor.h}, ${currentColor.s}%, ${currentColor.l}%)`;
+        }
+        
+        // 更新预览
+        function updatePreview() {
+            const preview = document.getElementById('colorPreview');
+            const previewText = document.getElementById('previewText');
+            
+            preview.style.backgroundColor = currentColor.hex;
+            previewText.textContent = currentColor.hex;
+            
+            // 根据背景色亮度调整文字颜色
+            const brightness = (currentColor.r * 299 + currentColor.g * 587 + currentColor.b * 114) / 1000;
+            previewText.style.color = brightness > 128 ? '#000000' : '#ffffff';
+        }
+        
+        // 随机颜色
+        function randomColor() {
+            const hex = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+            document.getElementById('hexInput').value = hex;
+            updateFromHex();
+        }
+        
+        // 复制颜色值
+        function copyColor(format) {
+            let value;
+            switch (format) {
+                case 'hex':
+                    value = currentColor.hex;
+                    break;
+                case 'rgb':
+                    value = `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`;
+                    break;
+                case 'hsl':
+                    value = `hsl(${currentColor.h}, ${currentColor.s}%, ${currentColor.l}%)`;
+                    break;
+            }
+            
+            navigator.clipboard.writeText(value).then(() => {
+                alert(`已复制: ${value}`);
+            }).catch(err => {
+                alert('复制失败: ' + err.message);
+            });
+        }
+        
+        // 颜色转换函数
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+        
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+        }
+        
+        function rgbToHsl(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                    case g: h = ((b - r) / d + 2) / 6; break;
+                    case b: h = ((r - g) / d + 4) / 6; break;
+                }
+            }
+            
+            return {
+                h: Math.round(h * 360),
+                s: Math.round(s * 100),
+                l: Math.round(l * 100)
+            };
+        }
+        
+        function hslToRgb(h, s, l) {
+            h /= 360;
+            s /= 100;
+            l /= 100;
+            
+            let r, g, b;
+            
+            if (s === 0) {
+                r = g = b = l;
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1/6) return p + (q - p) * 6 * t;
+                    if (t < 1/2) return q;
+                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                };
+                
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                
+                r = hue2rgb(p, q, h + 1/3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1/3);
+            }
+            
+            return {
+                r: Math.round(r * 255),
+                g: Math.round(g * 255),
+                b: Math.round(b * 255)
+            };
+        }
+        
+        // 主题切换
+        let isDark = true;
+        
+        function setTheme(light) {
+            isDark = !light;
+            document.documentElement.classList.toggle('light', light);
+            document.querySelector('.tool-btn').textContent = light ? '☀️' : '🌙';
+            localStorage.setItem('theme', light ? 'light' : 'dark');
+        }
+        
+        function toggleTheme() {
+            setTheme(isDark);
+        }
+        
+        // 初始化
+        initPresets();
+        updateFromHex();
+        
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') setTheme(true);
+    </script>
+</body>
+</html>

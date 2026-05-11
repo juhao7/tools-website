@@ -1,0 +1,172 @@
+<!-- index.html - 工具网站主页 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实用工具箱</title>
+    <link rel="stylesheet" href="css/base.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            min-height: 100vh;
+            background: var(--bg-primary);
+            padding: 40px 20px;
+            transition: background 0.3s;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+        
+        .header h1 span {
+            background: linear-gradient(135deg, #7c5cff, #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        
+        .tool-card {
+            text-align: center;
+            padding: 32px 24px;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .tool-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+        
+        .tool-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .category-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 60px 0 30px;
+            padding-left: 16px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle">
+        <button class="tool-btn" onclick="toggleTheme()">🌙</button>
+    </div>
+    
+    <div class="container">
+        <header class="header">
+            <h1>实用<span>工具箱</span></h1>
+            <p>简单、高效、免费的在线工具集合，为开发者、设计师和文字工作者提供便捷服务</p>
+        </header>
+        
+        <h2 class="category-title">👨‍💻 开发者工具</h2>
+        <div class="tools-grid">
+            <a href="tools/json-formatter.html" class="tool-card">
+                <span class="tool-icon">📋</span>
+                <h3 class="tool-title">JSON格式化器</h3>
+                <p class="tool-description">美化、压缩、验证JSON数据，支持语法高亮和错误检测</p>
+            </a>
+            
+            <a href="tools/color-converter.html" class="tool-card">
+                <span class="tool-icon">🎨</span>
+                <h3 class="tool-title">颜色转换器</h3>
+                <p class="tool-description">HEX、RGB、HSL颜色格式转换，支持颜色预览和调色板</p>
+            </a>
+        </div>
+        
+        <h2 class="category-title">📝 文字处理工具</h2>
+        <div class="tools-grid">
+            <a href="tools/word-counter.html" class="tool-card">
+                <span class="tool-icon">📊</span>
+                <h3 class="tool-title">字数统计器</h3>
+                <p class="tool-description">统计字符数、单词数、行数，支持中英文混合统计</p>
+            </a>
+        </div>
+        
+        <h2 class="category-title">🔒 安全工具</h2>
+        <div class="tools-grid">
+            <a href="tools/password-generator.html" class="tool-card">
+                <span class="tool-icon">🔑</span>
+                <h3 class="tool-title">密码生成器</h3>
+                <p class="tool-description">生成安全密码，支持自定义长度、字符类型和批量生成</p>
+            </a>
+        </div>
+        
+        <h2 class="category-title">📱 实用工具</h2>
+        <div class="tools-grid">
+            <a href="tools/qr-code-generator.html" class="tool-card">
+                <span class="tool-icon">📷</span>
+                <h3 class="tool-title">二维码生成器</h3>
+                <p class="tool-description">生成自定义二维码，支持调整大小、颜色和添加Logo</p>
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        let isDark = true;
+        
+        function setTheme(light) {
+            isDark = !light;
+            document.documentElement.classList.toggle('light', light);
+            document.querySelector('.theme-toggle button').textContent = light ? '☀️' : '🌙';
+            localStorage.setItem('theme', light ? 'light' : 'dark');
+        }
+        
+        function toggleTheme() {
+            setTheme(isDark);
+        }
+        
+        // 初始化主题
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') setTheme(true);
+    </script>
+</body>
+</html>

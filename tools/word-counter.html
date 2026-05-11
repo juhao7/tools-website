@@ -1,0 +1,291 @@
+<!-- tools/word-counter.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字数统计器 - 实用工具箱</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .editor-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 16px;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+        }
+        
+        textarea:focus {
+            border-color: var(--accent);
+        }
+        
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .detail-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .detail-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 字数统计器</h1>
+            <button class="tool-btn" onclick="toggleTheme()">🌙</button>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="charCount">0</div>
+                <div class="stat-label">字符数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="charNoSpace">0</div>
+                <div class="stat-label">不含空格</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="wordCount">0</div>
+                <div class="stat-label">单词数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="lineCount">0</div>
+                <div class="stat-label">行数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="chineseCount">0</div>
+                <div class="stat-label">中文字符</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="readingTime">0</div>
+                <div class="stat-label">阅读时间(分钟)</div>
+            </div>
+        </div>
+        
+        <div class="toolbar">
+            <button class="action-btn" onclick="clearText()">清空文本</button>
+            <button class="action-btn" onclick="copyText()">复制文本</button>
+            <button class="action-btn" onclick="loadSample()">加载示例</button>
+        </div>
+        
+        <div class="editor-container">
+            <div class="editor-header">
+                <span>输入文本</span>
+                <span id="lastUpdate" style="font-size: 12px; color: var(--text-muted);">实时统计中...</span>
+            </div>
+            <textarea id="textInput" placeholder="在此输入或粘贴文本内容..."></textarea>
+        </div>
+        
+        <div class="details-grid">
+            <div class="detail-card">
+                <div class="detail-title">平均每行字数</div>
+                <div class="detail-value" id="avgLine">0</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-title">平均每段字数</div>
+                <div class="detail-value" id="avgParagraph">0</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-title">最长行字数</div>
+                <div class="detail-value" id="maxLine">0</div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-title">段落数量</div>
+                <div class="detail-value" id="paragraphCount">0</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const textInput = document.getElementById('textInput');
+        let lastUpdateTimeout;
+        
+        // 实时统计
+        textInput.addEventListener('input', function() {
+            clearTimeout(lastUpdateTimeout);
+            lastUpdateTimeout = setTimeout(() => {
+                updateStats();
+                document.getElementById('lastUpdate').textContent = '最后更新: ' + new Date().toLocaleTimeString();
+            }, 300);
+        });
+        
+        function updateStats() {
+            const text = textInput.value;
+            
+            // 基础统计
+            const charCount = text.length;
+            const charNoSpace = text.replace(/\s/g, '').length;
+            const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            const lineCount = text === '' ? 0 : text.split('\n').length;
+            
+            // 中文字符统计
+            const chineseCount = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+            
+            // 阅读时间（按每分钟500字计算）
+            const readingTime = Math.ceil(charCount / 500);
+            
+            // 更新显示
+            document.getElementById('charCount').textContent = charCount;
+            document.getElementById('charNoSpace').textContent = charNoSpace;
+            document.getElementById('wordCount').textContent = wordCount;
+            document.getElementById('lineCount').textContent = lineCount;
+            document.getElementById('chineseCount').textContent = chineseCount;
+            document.getElementById('readingTime').textContent = readingTime;
+            
+            // 详细统计
+            const lines = text.split('\n');
+            const nonEmptyLines = lines.filter(line => line.trim() !== '');
+            const avgLine = nonEmptyLines.length > 0 ? Math.round(charCount / nonEmptyLines.length) : 0;
+            
+            const paragraphs = text.split(/\n\s*\n/);
+            const nonEmptyParagraphs = paragraphs.filter(p => p.trim() !== '');
+            const avgParagraph = nonEmptyParagraphs.length > 0 ? Math.round(charCount / nonEmptyParagraphs.length) : 0;
+            
+            const maxLine = nonEmptyLines.length > 0 ? Math.max(...nonEmptyLines.map(line => line.length)) : 0;
+            
+            document.getElementById('avgLine').textContent = avgLine;
+            document.getElementById('avgParagraph').textContent = avgParagraph;
+            document.getElementById('maxLine').textContent = maxLine;
+            document.getElementById('paragraphCount').textContent = nonEmptyParagraphs.length;
+        }
+        
+        function clearText() {
+            textInput.value = '';
+            updateStats();
+        }
+        
+        function copyText() {
+            if (!textInput.value) {
+                alert('没有可复制的文本');
+                return;
+            }
+            
+            navigator.clipboard.writeText(textInput.value).then(() => {
+                alert('文本已复制到剪贴板！');
+            }).catch(err => {
+                alert('复制失败: ' + err.message);
+            });
+        }
+        
+        function loadSample() {
+            const sample = `实用工具箱是一个免费的在线工具集合，为开发者、设计师和文字工作者提供便捷服务。
+
+我们提供以下工具：
+1. JSON格式化器 - 美化、压缩、验证JSON数据
+2. 字数统计器 - 统计字符数、单词数、行数
+3. 颜色转换器 - HEX、RGB、HSL颜色格式转换
+4. 密码生成器 - 生成安全密码
+5. 二维码生成器 - 生成自定义二维码
+
+所有工具都采用现代化的设计，支持深色/浅色主题切换，并且完全免费使用。`;
+            
+            textInput.value = sample;
+            updateStats();
+        }
+        
+        // 主题切换
+        let isDark = true;
+        
+        function setTheme(light) {
+            isDark = !light;
+            document.documentElement.classList.toggle('light', light);
+            document.querySelector('.tool-btn').textContent = light ? '☀️' : '🌙';
+            localStorage.setItem('theme', light ? 'light' : 'dark');
+        }
+        
+        function toggleTheme() {
+            setTheme(isDark);
+        }
+        
+        // 初始化
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') setTheme(true);
+        updateStats();
+    </script>
+</body>
+</html>

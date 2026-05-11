@@ -1,0 +1,103 @@
+/* css/base.css - 所有工具共享的基础样式 */
+:root {
+    --bg-primary: #0f0f1a;
+    --bg-secondary: rgba(255,255,255,0.05);
+    --bg-card: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.1);
+    --text-primary: #fff;
+    --text-secondary: rgba(255,255,255,0.7);
+    --text-muted: rgba(255,255,255,0.4);
+    --accent: #7c5cff;
+    --accent-light: rgba(124, 92, 255, 0.2);
+    --danger: #ff6b6b;
+    --warning: #ffa726;
+    --success: #66bb6a;
+    --info: #42a5f5;
+}
+
+:root.light {
+    --bg-primary: #f0f2f5;
+    --bg-secondary: rgba(0,0,0,0.04);
+    --bg-card: rgba(255,255,255,0.95);
+    --border: rgba(0,0,0,0.08);
+    --text-primary: #1a1a2e;
+    --text-secondary: rgba(0,0,0,0.65);
+    --text-muted: rgba(0,0,0,0.35);
+    --accent: #6c4cff;
+    --accent-light: rgba(108, 76, 255, 0.1);
+}
+
+/* 通用组件样式 */
+.tool-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.tool-card:hover {
+    border-color: rgba(124, 92, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.tool-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.tool-btn:hover { transform: scale(1.05); }
+
+.input-field {
+    width: 100%;
+    padding: 14px 18px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-field::placeholder { color: var(--text-muted); }
+.input-field:focus { border-color: var(--accent); }
+
+.primary-btn {
+    padding: 12px 32px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #7c5cff, #6c4cff);
+    color: white;
+    font-size: 15px;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(124, 92, 255, 0.4);
+}
+
+.secondary-btn {
+    padding: 12px 24px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+}

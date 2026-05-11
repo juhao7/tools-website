@@ -7,12 +7,53 @@
     <title>字数统计器 - 实用工具箱</title>
     <link rel="stylesheet" href="../css/base.css">
     <style>
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: rgba(255,255,255,0.05);
+            --bg-card: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.1);
+            --text-primary: #fff;
+            --text-secondary: rgba(255,255,255,0.7);
+            --text-muted: rgba(255,255,255,0.4);
+            --accent: #7c5cff;
+            --accent-light: rgba(124, 92, 255, 0.2);
+            --success: #66bb6a;
+            --warning: #ffa726;
+            --danger: #ff6b6b;
+        }
+
+        :root.light {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: rgba(0,0,0,0.04);
+            --bg-card: rgba(255,255,255,0.95);
+            --border: rgba(0,0,0,0.08);
+            --text-primary: #1a1a2e;
+            --text-secondary: rgba(0,0,0,0.65);
+            --text-muted: rgba(0,0,0,0.35);
+            --accent: #6c4cff;
+            --accent-light: rgba(108, 76, 255, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            min-height: 100vh;
+            background: var(--bg-primary);
             padding: 20px;
+            transition: background 0.3s;
         }
         
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* 头部 */
         .header {
             display: flex;
             justify-content: space-between;
@@ -20,11 +61,50 @@
             margin-bottom: 30px;
         }
         
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .tool-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .tool-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+        
+        /* 统计卡片 */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
         }
         
         .stat-card {
@@ -33,26 +113,120 @@
             border-radius: 16px;
             padding: 20px;
             text-align: center;
+            transition: all 0.3s;
         }
         
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent);
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+        
+        .stat-icon {
+            font-size: 1.5rem;
             margin-bottom: 8px;
         }
         
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+        
         .stat-label {
-            font-size: 1rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
         }
         
+        /* 工具栏 */
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+            transform: translateY(-1px);
+        }
+        
+        .action-btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        
+        .action-btn.primary:hover {
+            background: #6c4cff;
+            transform: translateY(-1px);
+        }
+        
+        /* 文件上传区域 */
+        .upload-area {
+            background: var(--bg-card);
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+        
+        .upload-area.dragover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+            transform: scale(1.01);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        /* 编辑器容器 */
         .editor-container {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
         
         .editor-header {
@@ -60,6 +234,20 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+        }
+        
+        .editor-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .editor-info {
+            font-size: 12px;
+            color: var(--text-muted);
         }
         
         textarea {
@@ -70,26 +258,25 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             color: var(--text-primary);
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.6;
             resize: vertical;
             outline: none;
+            transition: border-color 0.2s;
         }
         
         textarea:focus {
             border-color: var(--accent);
         }
         
-        .toolbar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+        textarea::placeholder {
+            color: var(--text-muted);
         }
         
+        /* 详细统计 */
         .details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 16px;
         }
         
@@ -98,91 +285,208 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .detail-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
         
         .detail-title {
-            font-size: 14px;
+            font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 8px;
         }
         
         .detail-value {
-            font-size: 18px;
+            font-size: 1.2rem;
             font-weight: 600;
             color: var(--text-primary);
+        }
+        
+        .detail-icon {
+            font-size: 1.5rem;
+            opacity: 0.5;
+        }
+        
+        /* 提示消息 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- 头部 -->
         <div class="header">
-            <h1>📊 字数统计器</h1>
-            <button class="tool-btn" onclick="toggleTheme()">🌙</button>
+            <div class="header-left">
+                <h1>📊 字数统计器</h1>
+            </div>
+            <div class="header-actions">
+                <button class="tool-btn" onclick="toggleTheme()" id="themeBtn" title="切换主题">🌙</button>
+                <a href="../index.html" class="tool-btn" title="返回首页">🏠</a>
+            </div>
         </div>
         
+        <!-- 统计卡片 -->
         <div class="stats-grid">
             <div class="stat-card">
+                <div class="stat-icon">📝</div>
                 <div class="stat-number" id="charCount">0</div>
                 <div class="stat-label">字符数</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">🔤</div>
                 <div class="stat-number" id="charNoSpace">0</div>
                 <div class="stat-label">不含空格</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">📖</div>
                 <div class="stat-number" id="wordCount">0</div>
                 <div class="stat-label">单词数</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">📄</div>
                 <div class="stat-number" id="lineCount">0</div>
                 <div class="stat-label">行数</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">🇨🇳</div>
                 <div class="stat-number" id="chineseCount">0</div>
                 <div class="stat-label">中文字符</div>
             </div>
             <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
                 <div class="stat-number" id="readingTime">0</div>
                 <div class="stat-label">阅读时间(分钟)</div>
             </div>
         </div>
         
+        <!-- 工具栏 -->
         <div class="toolbar">
-            <button class="action-btn" onclick="clearText()">清空文本</button>
-            <button class="action-btn" onclick="copyText()">复制文本</button>
-            <button class="action-btn" onclick="loadSample()">加载示例</button>
+            <button class="action-btn primary" onclick="document.getElementById('fileInput').click()">
+                📁 上传文件
+            </button>
+            <button class="action-btn" onclick="loadSample()">
+                📋 加载示例
+            </button>
+            <button class="action-btn" onclick="copyText()">
+                📄 复制文本
+            </button>
+            <button class="action-btn" onclick="clearText()">
+                🗑️ 清空文本
+            </button>
+            <input type="file" id="fileInput" class="file-input" accept=".txt,.md,.csv,.json,.html,.xml,.js,.css,.py,.java,.c,.cpp" onchange="handleFileUpload(event)">
         </div>
         
+        <!-- 文件上传区域 -->
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">📤</div>
+            <div class="upload-text">拖拽文件到此处或点击上传</div>
+            <div class="upload-hint">支持 TXT、Markdown、CSV、JSON、HTML 等文本文件</div>
+        </div>
+        
+        <!-- 编辑器 -->
         <div class="editor-container">
             <div class="editor-header">
-                <span>输入文本</span>
-                <span id="lastUpdate" style="font-size: 12px; color: var(--text-muted);">实时统计中...</span>
+                <span class="editor-title">✏️ 输入文本</span>
+                <span class="editor-info" id="editorInfo">实时统计中...</span>
             </div>
-            <textarea id="textInput" placeholder="在此输入或粘贴文本内容..."></textarea>
+            <textarea id="textInput" placeholder="在此输入或粘贴文本内容...&#10;&#10;支持直接输入、粘贴或上传文件进行统计"></textarea>
         </div>
         
+        <!-- 详细统计 -->
         <div class="details-grid">
             <div class="detail-card">
-                <div class="detail-title">平均每行字数</div>
-                <div class="detail-value" id="avgLine">0</div>
+                <div class="detail-info">
+                    <div class="detail-title">平均每行字数</div>
+                    <div class="detail-value" id="avgLine">0</div>
+                </div>
+                <div class="detail-icon">📏</div>
             </div>
             <div class="detail-card">
-                <div class="detail-title">平均每段字数</div>
-                <div class="detail-value" id="avgParagraph">0</div>
+                <div class="detail-info">
+                    <div class="detail-title">平均每段字数</div>
+                    <div class="detail-value" id="avgParagraph">0</div>
+                </div>
+                <div class="detail-icon">📊</div>
             </div>
             <div class="detail-card">
-                <div class="detail-title">最长行字数</div>
-                <div class="detail-value" id="maxLine">0</div>
+                <div class="detail-info">
+                    <div class="detail-title">最长行字数</div>
+                    <div class="detail-value" id="maxLine">0</div>
+                </div>
+                <div class="detail-icon">📐</div>
             </div>
             <div class="detail-card">
-                <div class="detail-title">段落数量</div>
-                <div class="detail-value" id="paragraphCount">0</div>
+                <div class="detail-info">
+                    <div class="detail-title">段落数量</div>
+                    <div class="detail-value" id="paragraphCount">0</div>
+                </div>
+                <div class="detail-icon">📑</div>
             </div>
         </div>
     </div>
     
+    <!-- 提示消息 -->
+    <div class="toast" id="toast"></div>
+    
     <script>
         const textInput = document.getElementById('textInput');
+        const uploadArea = document.getElementById('uploadArea');
         let lastUpdateTimeout;
         
         // 实时统计
@@ -190,9 +494,69 @@
             clearTimeout(lastUpdateTimeout);
             lastUpdateTimeout = setTimeout(() => {
                 updateStats();
-                document.getElementById('lastUpdate').textContent = '最后更新: ' + new Date().toLocaleTimeString();
+                document.getElementById('editorInfo').textContent = '最后更新: ' + new Date().toLocaleTimeString();
             }, 300);
         });
+        
+        // 文件拖拽上传
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                readFile(files[0]);
+            }
+        });
+        
+        // 文件上传处理
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                readFile(file);
+            }
+            // 重置 input 以允许重复上传同一文件
+            event.target.value = '';
+        }
+        
+        function readFile(file) {
+            // 检查文件类型
+            const validTypes = ['.txt', '.md', '.csv', '.json', '.html', '.xml', '.js', '.css', '.py', '.java', '.c', '.cpp'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!validTypes.includes(fileExtension)) {
+                showToast('不支持的文件类型，请上传文本文件');
+                return;
+            }
+            
+            // 检查文件大小（限制 5MB）
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('文件过大，请上传小于 5MB 的文件');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                textInput.value = e.target.result;
+                updateStats();
+                showToast('✅ 文件 "' + file.name + '" 已成功加载');
+                document.getElementById('editorInfo').textContent = '已加载文件: ' + file.name;
+            };
+            reader.onerror = function() {
+                showToast('❌ 文件读取失败，请重试');
+            };
+            reader.readAsText(file);
+        }
         
         function updateStats() {
             const text = textInput.value;
@@ -210,11 +574,11 @@
             const readingTime = Math.ceil(charCount / 500);
             
             // 更新显示
-            document.getElementById('charCount').textContent = charCount;
-            document.getElementById('charNoSpace').textContent = charNoSpace;
-            document.getElementById('wordCount').textContent = wordCount;
-            document.getElementById('lineCount').textContent = lineCount;
-            document.getElementById('chineseCount').textContent = chineseCount;
+            document.getElementById('charCount').textContent = charCount.toLocaleString();
+            document.getElementById('charNoSpace').textContent = charNoSpace.toLocaleString();
+            document.getElementById('wordCount').textContent = wordCount.toLocaleString();
+            document.getElementById('lineCount').textContent = lineCount.toLocaleString();
+            document.getElementById('chineseCount').textContent = chineseCount.toLocaleString();
             document.getElementById('readingTime').textContent = readingTime;
             
             // 详细统计
@@ -228,27 +592,36 @@
             
             const maxLine = nonEmptyLines.length > 0 ? Math.max(...nonEmptyLines.map(line => line.length)) : 0;
             
-            document.getElementById('avgLine').textContent = avgLine;
-            document.getElementById('avgParagraph').textContent = avgParagraph;
-            document.getElementById('maxLine').textContent = maxLine;
+            document.getElementById('avgLine').textContent = avgLine.toLocaleString();
+            document.getElementById('avgParagraph').textContent = avgParagraph.toLocaleString();
+            document.getElementById('maxLine').textContent = maxLine.toLocaleString();
             document.getElementById('paragraphCount').textContent = nonEmptyParagraphs.length;
         }
         
         function clearText() {
             textInput.value = '';
             updateStats();
+            document.getElementById('editorInfo').textContent = '实时统计中...';
+            showToast('🗑️ 文本已清空');
         }
         
         function copyText() {
             if (!textInput.value) {
-                alert('没有可复制的文本');
+                showToast('⚠️ 没有可复制的文本');
                 return;
             }
             
             navigator.clipboard.writeText(textInput.value).then(() => {
-                alert('文本已复制到剪贴板！');
+                showToast('✅ 文本已复制到剪贴板');
             }).catch(err => {
-                alert('复制失败: ' + err.message);
+                // 备用方案
+                const textArea = document.createElement('textarea');
+                textArea.value = textInput.value;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('✅ 文本已复制到剪贴板');
             });
         }
         
@@ -262,10 +635,25 @@
 4. 密码生成器 - 生成安全密码
 5. 二维码生成器 - 生成自定义二维码
 
-所有工具都采用现代化的设计，支持深色/浅色主题切换，并且完全免费使用。`;
+所有工具都采用现代化的设计，支持深色/浅色主题切换，并且完全免费使用。
+
+欢迎体验我们的工具，如有任何建议或反馈，请随时联系我们。`;
             
             textInput.value = sample;
             updateStats();
+            document.getElementById('editorInfo').textContent = '已加载示例文本';
+            showToast('📋 示例文本已加载');
+        }
+        
+        // 显示提示消息
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
         }
         
         // 主题切换
@@ -274,7 +662,11 @@
         function setTheme(light) {
             isDark = !light;
             document.documentElement.classList.toggle('light', light);
-            document.querySelector('.tool-btn').textContent = light ? '☀️' : '🌙';
+            const themeBtn = document.getElementById('themeBtn');
+            if (themeBtn) {
+                themeBtn.textContent = light ? '☀️' : '🌙';
+                themeBtn.title = light ? '切换到深色模式' : '切换到浅色模式';
+            }
             localStorage.setItem('theme', light ? 'light' : 'dark');
         }
         
@@ -286,6 +678,15 @@
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'light') setTheme(true);
         updateStats();
+        
+        // 绑定键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+Shift+T 切换主题
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        });
     </script>
 </body>
 </html>

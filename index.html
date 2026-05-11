@@ -7,6 +7,39 @@
     <title>实用工具箱</title>
     <link rel="stylesheet" href="css/base.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: rgba(255,255,255,0.05);
+            --bg-card: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.1);
+            --text-primary: #fff;
+            --text-secondary: rgba(255,255,255,0.7);
+            --text-muted: rgba(255,255,255,0.4);
+            --accent: #7c5cff;
+            --accent-light: rgba(124, 92, 255, 0.2);
+            --success: #66bb6a;
+            --warning: #ffa726;
+            --danger: #ff6b6b;
+        }
+
+        :root.light {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: rgba(0,0,0,0.04);
+            --bg-card: rgba(255,255,255,0.95);
+            --border: rgba(0,0,0,0.08);
+            --text-primary: #1a1a2e;
+            --text-secondary: rgba(0,0,0,0.65);
+            --text-muted: rgba(0,0,0,0.35);
+            --accent: #6c4cff;
+            --accent-light: rgba(108, 76, 255, 0.1);
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
             min-height: 100vh;
@@ -20,6 +53,27 @@
             margin: 0 auto;
         }
         
+        /* 时钟样式 */
+        .clock-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .clock-time {
+            font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+            font-size: 4rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            letter-spacing: 4px;
+        }
+        
+        .clock-date {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+        
+        /* 头部样式 */
         .header {
             text-align: center;
             margin-bottom: 60px;
@@ -43,8 +97,10 @@
             color: var(--text-secondary);
             max-width: 600px;
             margin: 0 auto;
+            line-height: 1.6;
         }
         
+        /* 工具网格 */
         .tools-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -58,6 +114,16 @@
             text-decoration: none;
             color: inherit;
             display: block;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(124, 92, 255, 0.2);
         }
         
         .tool-icon {
@@ -88,23 +154,213 @@
             border-left: 4px solid var(--accent);
         }
         
+        /* 主题切换按钮 */
         .theme-toggle {
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 100;
         }
+        
+        .tool-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            color: var(--text-primary);
+        }
+        
+        .tool-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 反馈部分 - 简洁设计 */
+        .feedback-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .feedback-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feedback-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .feedback-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .feedback-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .email-address {
+            font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+            font-size: 0.9rem;
+            color: var(--accent);
+            background: var(--bg-secondary);
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+        
+        .copy-btn {
+            padding: 8px 14px;
+            background: var(--accent);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: #6c4cff;
+            transform: translateY(-1px);
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        
+        /* 快速链接 */
+        .quick-links {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-link {
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        
+        .quick-link:hover {
+            background: var(--accent-light);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+            
+            .clock-time {
+                font-size: 2.5rem;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feedback-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .feedback-left {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .feedback-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .clock-time {
+                font-size: 2rem;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .category-title {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="theme-toggle">
-        <button class="tool-btn" onclick="toggleTheme()">🌙</button>
+        <button class="tool-btn" onclick="toggleTheme()" id="themeBtn" title="切换主题">🌙</button>
     </div>
     
     <div class="container">
+        <!-- 时钟区域 -->
+        <div class="clock-section">
+            <div class="clock-time" id="clock">00:00:00</div>
+            <div class="clock-date" id="clockDate"></div>
+        </div>
+        
         <header class="header">
             <h1>实用<span>工具箱</span></h1>
             <p>简单、高效、免费的在线工具集合，为开发者、设计师和文字工作者提供便捷服务</p>
+            
+            <!-- 快速链接 -->
+            <div class="quick-links">
+                <a href="tools/json-formatter.html" class="quick-link">📋 JSON格式化</a>
+                <a href="tools/word-counter.html" class="quick-link">📊 字数统计</a>
+                <a href="tools/password-generator.html" class="quick-link">🔑 密码生成</a>
+                <a href="tools/qr-code-generator.html" class="quick-link">📷 二维码生成</a>
+            </div>
         </header>
         
         <h2 class="category-title">👨‍💻 开发者工具</h2>
@@ -148,15 +404,60 @@
                 <p class="tool-description">生成自定义二维码，支持调整大小、颜色和添加Logo</p>
             </a>
         </div>
+        
+        <!-- 反馈部分 - 简洁设计 -->
+        <div class="feedback-section">
+            <div class="feedback-left">
+                <div class="feedback-title">💌 反馈与建议</div>
+                <div class="feedback-description">遇到问题或有想要的工具？请联系我们</div>
+            </div>
+            <div class="feedback-right">
+                <div class="email-address">juhao778@163.com</div>
+                <button class="copy-btn" onclick="copyEmail()">复制邮箱</button>
+            </div>
+        </div>
+        
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>© 2024 实用工具箱 - 简单、高效、免费的在线工具集合</p>
+            <p>最后更新时间：<span id="lastUpdate"></span></p>
+            <div class="quick-links" style="margin-top: 15px;">
+                <a href="#" class="quick-link" onclick="scrollToTop()">⬆️ 回到顶部</a>
+                <a href="tools/json-formatter.html" class="quick-link">📋 JSON格式化</a>
+                <a href="tools/word-counter.html" class="quick-link">📊 字数统计</a>
+                <a href="tools/password-generator.html" class="quick-link">🔑 密码生成</a>
+                <a href="tools/qr-code-generator.html" class="quick-link">📷 二维码生成</a>
+            </div>
+        </div>
     </div>
     
     <script>
+        // 时钟功能
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+            
+            const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const y = now.getFullYear();
+            const mo = now.getMonth() + 1;
+            const d = now.getDate();
+            document.getElementById('clockDate').textContent = `${y}年${mo}月${d}日 ${weekDays[now.getDay()]}`;
+        }
+        
+        // 主题切换功能
         let isDark = true;
         
         function setTheme(light) {
             isDark = !light;
             document.documentElement.classList.toggle('light', light);
-            document.querySelector('.theme-toggle button').textContent = light ? '☀️' : '🌙';
+            const themeBtn = document.getElementById('themeBtn');
+            if (themeBtn) {
+                themeBtn.textContent = light ? '☀️' : '🌙';
+                themeBtn.title = light ? '切换到深色模式' : '切换到浅色模式';
+            }
             localStorage.setItem('theme', light ? 'light' : 'dark');
         }
         
@@ -167,6 +468,62 @@
         // 初始化主题
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'light') setTheme(true);
+        
+        // 复制邮箱地址
+        function copyEmail() {
+            const email = 'juhao778@163.com';
+            navigator.clipboard.writeText(email).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = '✅ 已复制';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                // 备用方案：使用传统方法
+                const textArea = document.createElement('textarea');
+                textArea.value = email;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = '✅ 已复制';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+        
+        // 回到顶部
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化时钟
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // 设置最后更新时间
+            const lastUpdate = new Date().toLocaleString();
+            document.getElementById('lastUpdate').textContent = lastUpdate;
+            
+            // 绑定键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+Shift+T 切换主题
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+                    e.preventDefault();
+                    toggleTheme();
+                }
+            });
+        });
     </script>
 </body>
 </html>

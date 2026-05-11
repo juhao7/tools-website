@@ -103,13 +103,13 @@
         /* 工具网格 */
         .tools-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
         }
         
         .tool-card {
             text-align: center;
-            padding: 32px 24px;
+            padding: 28px 20px;
             cursor: pointer;
             text-decoration: none;
             color: inherit;
@@ -127,29 +127,29 @@
         }
         
         .tool-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
+            font-size: 2.5rem;
+            margin-bottom: 16px;
             display: block;
         }
         
         .tool-title {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         
         .tool-description {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--text-secondary);
             line-height: 1.5;
         }
         
         .category-title {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 600;
             color: var(--text-primary);
-            margin: 60px 0 30px;
+            margin: 50px 0 24px;
             padding-left: 16px;
             border-left: 4px solid var(--accent);
         }
@@ -187,7 +187,7 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 16px 20px;
-            margin-top: 60px;
+            margin-top: 50px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -262,7 +262,7 @@
         .quick-links {
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
             margin-top: 15px;
             flex-wrap: wrap;
         }
@@ -333,7 +333,7 @@
             }
             
             .category-title {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -356,6 +356,7 @@
             
             <!-- 快速链接 -->
             <div class="quick-links">
+                <a href="tools/todo-list.html" class="quick-link">✅ 待办事项</a>
                 <a href="tools/json-formatter.html" class="quick-link">📋 JSON格式化</a>
                 <a href="tools/word-counter.html" class="quick-link">📊 字数统计</a>
                 <a href="tools/password-generator.html" class="quick-link">🔑 密码生成</a>
@@ -376,6 +377,12 @@
                 <h3 class="tool-title">颜色转换器</h3>
                 <p class="tool-description">HEX、RGB、HSL颜色格式转换，支持颜色预览和调色板</p>
             </a>
+            
+            <a href="tools/password-generator.html" class="tool-card">
+                <span class="tool-icon">🔑</span>
+                <h3 class="tool-title">密码生成器</h3>
+                <p class="tool-description">生成安全密码，支持自定义长度、字符类型和批量生成</p>
+            </a>
         </div>
         
         <h2 class="category-title">📝 文字处理工具</h2>
@@ -387,17 +394,14 @@
             </a>
         </div>
         
-        <h2 class="category-title">🔒 安全工具</h2>
-        <div class="tools-grid">
-            <a href="tools/password-generator.html" class="tool-card">
-                <span class="tool-icon">🔑</span>
-                <h3 class="tool-title">密码生成器</h3>
-                <p class="tool-description">生成安全密码，支持自定义长度、字符类型和批量生成</p>
-            </a>
-        </div>
-        
         <h2 class="category-title">📱 实用工具</h2>
         <div class="tools-grid">
+            <a href="tools/todo-list.html" class="tool-card">
+                <span class="tool-icon">✅</span>
+                <h3 class="tool-title">待办事项</h3>
+                <p class="tool-description">管理您的待办事项，支持分类、优先级、子任务和截止日期</p>
+            </a>
+            
             <a href="tools/qr-code-generator.html" class="tool-card">
                 <span class="tool-icon">📷</span>
                 <h3 class="tool-title">二维码生成器</h3>
@@ -423,6 +427,7 @@
             <p>最后更新时间：<span id="lastUpdate"></span></p>
             <div class="quick-links" style="margin-top: 15px;">
                 <a href="#" class="quick-link" onclick="scrollToTop()">⬆️ 回到顶部</a>
+                <a href="tools/todo-list.html" class="quick-link">✅ 待办事项</a>
                 <a href="tools/json-formatter.html" class="quick-link">📋 JSON格式化</a>
                 <a href="tools/word-counter.html" class="quick-link">📊 字数统计</a>
                 <a href="tools/password-generator.html" class="quick-link">🔑 密码生成</a>

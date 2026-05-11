@@ -8,55 +8,219 @@
     <link rel="stylesheet" href="../css/base.css">
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <style>
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
+
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: rgba(255,255,255,0.05);
+            --bg-card: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.1);
+            --text-primary: #fff;
+            --text-secondary: rgba(255,255,255,0.7);
+            --text-muted: rgba(255,255,255,0.4);
+            --accent: #7c5cff;
+            --accent-light: rgba(124, 92, 255, 0.2);
+        }
+
+        :root.light {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: rgba(0,0,0,0.04);
+            --bg-card: rgba(255,255,255,0.95);
+            --border: rgba(0,0,0,0.08);
+            --text-primary: #1a1a2e;
+            --text-secondary: rgba(0,0,0,0.65);
+            --text-muted: rgba(0,0,0,0.35);
+            --accent: #6c4cff;
+            --accent-light: rgba(108, 76, 255, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            min-height: 100vh;
+            background: var(--bg-primary);
+            display: flex;
+            justify-content: center;
+            padding: 30px 16px;
+            transition: background 0.3s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* 时钟样式 */
+        .clock-section {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .clock-time {
+            font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            letter-spacing: 4px;
+        }
+
+        .clock-date {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        /* 头部样式 */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
-        
-        .generator-layout {
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header h1 span {
+            background: linear-gradient(135deg, #7c5cff, #ff6b9d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .tool-btn:hover { transform: scale(1.05); }
+
+        /* 主内容区域 - 三栏布局 */
+        .main-content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 20px;
             margin-bottom: 30px;
         }
-        
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 左侧模板栏 */
+        .left-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preset-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .preset-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .preset-card.active {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .preset-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .preset-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* 中间编辑区 */
+        .center-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
         .input-section {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 24px;
         }
-        
+
         .input-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
+
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-        
+
         .input-label {
             display: block;
             margin-bottom: 8px;
             color: var(--text-secondary);
             font-weight: 500;
+            font-size: 14px;
         }
-        
+
         textarea {
             width: 100%;
-            height: 120px;
-            padding: 15px;
+            height: 100px;
+            padding: 12px 15px;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 12px;
@@ -66,72 +230,108 @@
             resize: vertical;
             outline: none;
             font-family: inherit;
+            transition: border-color 0.2s;
         }
-        
+
         textarea:focus {
             border-color: var(--accent);
         }
-        
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
         .options-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             margin-bottom: 20px;
         }
-        
+
         .option-item {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
-        
+
         .option-item label {
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
         }
-        
+
         .option-item select,
-        .option-item input {
+        .option-item input[type="text"] {
             padding: 10px 12px;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 8px;
             color: var(--text-primary);
             font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
         }
-        
+
+        .option-item select:focus,
+        .option-item input[type="text"]:focus {
+            border-color: var(--accent);
+        }
+
         .color-option {
             display: flex;
             gap: 10px;
             align-items: center;
         }
-        
+
         .color-option input[type="color"] {
             width: 40px;
             height: 40px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
+            padding: 0;
         }
-        
+
+        .color-option input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 2px;
+        }
+
+        .color-option input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 6px;
+        }
+
+        .color-hex {
+            font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
         .generate-btn {
             width: 100%;
-            padding: 15px;
+            padding: 14px;
             background: linear-gradient(135deg, #7c5cff, #6c4cff);
             border: none;
             border-radius: 12px;
             color: white;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            margin-top: 10px;
         }
-        
+
         .generate-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(124, 92, 255, 0.4);
         }
-        
+
+        /* 右侧预览区 */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
         .preview-section {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -141,17 +341,21 @@
             flex-direction: column;
             align-items: center;
         }
-        
+
         .preview-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        
+
         .qr-preview {
-            width: 256px;
-            height: 256px;
+            width: 100%;
+            max-width: 256px;
+            aspect-ratio: 1;
             background: white;
             border-radius: 12px;
             display: flex;
@@ -159,28 +363,147 @@
             justify-content: center;
             margin-bottom: 20px;
             padding: 20px;
+            border: 1px solid var(--border);
         }
-        
+
         .qr-preview canvas {
             max-width: 100%;
             max-height: 100%;
+            border-radius: 8px;
         }
-        
+
         .qr-placeholder {
             color: var(--text-muted);
             text-align: center;
             font-size: 14px;
+            padding: 20px;
         }
-        
+
         .download-buttons {
-            display: flex;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
             width: 100%;
         }
-        
+
         .download-btn {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .download-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .download-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 历史记录 */
+        .history-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .history-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            background: var(--accent-light);
+        }
+
+        .history-thumb {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .history-thumb canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .history-info {
             flex: 1;
-            padding: 12px;
+            min-width: 0;
+        }
+
+        .history-text {
+            color: var(--text-primary);
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-time {
+            color: var(--text-muted);
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        /* 底部操作栏 */
+        .bottom-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
             border: 1px solid var(--border);
             border-radius: 10px;
             background: var(--bg-secondary);
@@ -188,182 +511,305 @@
             font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        
-        .download-btn:hover {
+
+        .action-btn:hover {
             border-color: var(--accent);
             background: var(--accent-light);
         }
-        
-        .presets-section {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            margin-top: 30px;
-        }
-        
-        .presets-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-        }
-        
-        .presets-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        
-        .preset-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .preset-card:hover {
+
+        .action-btn.primary {
+            background: var(--accent);
             border-color: var(--accent);
-            transform: translateY(-2px);
+            color: white;
         }
-        
-        .preset-name {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 5px;
+
+        .action-btn.primary:hover {
+            background: var(--accent);
+            box-shadow: 0 4px 15px rgba(124, 92, 255, 0.4);
         }
-        
-        .preset-desc {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-        
+
+        /* 响应式设计 */
         @media (max-width: 768px) {
-            .generator-layout {
+            body {
+                padding: 20px 10px;
+            }
+
+            .clock-time {
+                font-size: 2.5rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .main-content {
                 grid-template-columns: 1fr;
             }
-            
+
+            .left-panel {
+                position: static;
+            }
+
             .options-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .download-buttons {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- 时钟区域 -->
+        <div class="clock-section">
+            <div class="clock-time" id="clock">00:00:00</div>
+            <div class="clock-date" id="clockDate"></div>
+        </div>
+
+        <!-- 头部 -->
         <div class="header">
-            <h1>📷 二维码生成器</h1>
-            <button class="tool-btn" onclick="toggleTheme()">🌙</button>
-        </div>
-        
-        <div class="generator-layout">
-            <div class="input-section">
-                <div class="input-title">输入内容</div>
-                
-                <div class="input-group">
-                    <label class="input-label">文本或URL</label>
-                    <textarea id="qrInput" placeholder="输入网址、文本、联系方式等..." oninput="generateQRCode()">https://example.com</textarea>
-                </div>
-                
-                <div class="options-grid">
-                    <div class="option-item">
-                        <label>二维码大小</label>
-                        <select id="qrSize">
-                            <option value="200">200x200</option>
-                            <option value="300" selected>300x300</option>
-                            <option value="400">400x400</option>
-                            <option value="500">500x500</option>
-                        </select>
-                    </div>
-                    
-                    <div class="option-item">
-                        <label>纠错级别</label>
-                        <select id="errorLevel">
-                            <option value="L">低 (7%)</option>
-                            <option value="M" selected>中 (15%)</option>
-                            <option value="Q">较高 (25%)</option>
-                            <option value="H">高 (30%)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="option-item">
-                        <label>前景色</label>
-                        <div class="color-option">
-                            <input type="color" id="foregroundColor" value="#000000" onchange="generateQRCode()">
-                            <span id="foregroundHex">#000000</span>
-                        </div>
-                    </div>
-                    
-                    <div class="option-item">
-                        <label>背景色</label>
-                        <div class="color-option">
-                            <input type="color" id="backgroundColor" value="#ffffff" onchange="generateQRCode()">
-                            <span id="backgroundHex">#ffffff</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <button class="generate-btn" onclick="generateQRCode()">生成二维码</button>
-            </div>
-            
-            <div class="preview-section">
-                <div class="preview-title">二维码预览</div>
-                <div class="qr-preview" id="qrPreview">
-                    <div class="qr-placeholder" id="qrPlaceholder">
-                        输入内容后将自动生成二维码
-                    </div>
-                    <canvas id="qrCanvas" style="display: none;"></canvas>
-                </div>
-                <div class="download-buttons">
-                    <button class="download-btn" onclick="downloadQRCode('png')">下载 PNG</button>
-                    <button class="download-btn" onclick="downloadQRCode('jpg')">下载 JPG</button>
-                    <button class="download-btn" onclick="downloadQRCode('svg')">下载 SVG</button>
-                </div>
+            <h1>📷 二维码<span>生成器</span></h1>
+            <div class="toolbar">
+                <button class="tool-btn" onclick="toggleTheme()" id="themeBtn" title="切换主题">🌙</button>
+                <a href="../index.html" class="tool-btn" title="返回主页">🏠</a>
             </div>
         </div>
-        
-        <div class="presets-section">
-            <div class="presets-title">常用模板</div>
-            <div class="presets-grid">
+
+        <!-- 主内容区域 - 三栏布局 -->
+        <div class="main-content">
+            <!-- 左侧模板栏 -->
+            <div class="left-panel">
+                <div class="panel-title">📋 常用模板</div>
                 <div class="preset-card" onclick="loadPreset('website')">
-                    <div class="preset-name">网站链接</div>
+                    <div class="preset-name">🌐 网站链接</div>
                     <div class="preset-desc">生成网站URL二维码</div>
                 </div>
                 <div class="preset-card" onclick="loadPreset('email')">
-                    <div class="preset-name">电子邮件</div>
+                    <div class="preset-name">📧 电子邮件</div>
                     <div class="preset-desc">生成邮件发送二维码</div>
                 </div>
                 <div class="preset-card" onclick="loadPreset('phone')">
-                    <div class="preset-name">电话号码</div>
+                    <div class="preset-name">📱 电话号码</div>
                     <div class="preset-desc">生成拨打电话二维码</div>
                 </div>
                 <div class="preset-card" onclick="loadPreset('sms')">
-                    <div class="preset-name">短信</div>
+                    <div class="preset-name">💬 短信</div>
                     <div class="preset-desc">生成发送短信二维码</div>
                 </div>
                 <div class="preset-card" onclick="loadPreset('wifi')">
-                    <div class="preset-name">WiFi连接</div>
+                    <div class="preset-name">📶 WiFi连接</div>
                     <div class="preset-desc">生成WiFi连接二维码</div>
                 </div>
                 <div class="preset-card" onclick="loadPreset('text')">
-                    <div class="preset-name">纯文本</div>
+                    <div class="preset-name">📝 纯文本</div>
                     <div class="preset-desc">生成纯文本二维码</div>
                 </div>
+                <div class="preset-card" onclick="loadPreset('wechat')">
+                    <div class="preset-name">💚 微信</div>
+                    <div class="preset-desc">生成微信二维码</div>
+                </div>
+                <div class="preset-card" onclick="loadPreset('alipay')">
+                    <div class="preset-name">💙 支付宝</div>
+                    <div class="preset-desc">生成支付宝二维码</div>
+                </div>
             </div>
+
+            <!-- 中间编辑区 -->
+            <div class="center-panel">
+                <div class="input-section">
+                    <div class="input-title">✏️ 输入内容</div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">文本或URL</label>
+                        <textarea id="qrInput" placeholder="输入网址、文本、联系方式等...&#10;&#10;示例：&#10;https://example.com&#10;mailto:test@example.com&#10;tel:+8613800138000" oninput="autoGenerate()">https://example.com</textarea>
+                    </div>
+                    
+                    <div class="options-grid">
+                        <div class="option-item">
+                            <label>二维码大小</label>
+                            <select id="qrSize">
+                                <option value="200">200x200</option>
+                                <option value="300" selected>300x300</option>
+                                <option value="400">400x400</option>
+                                <option value="500">500x500</option>
+                            </select>
+                        </div>
+                        
+                        <div class="option-item">
+                            <label>纠错级别</label>
+                            <select id="errorLevel">
+                                <option value="L">低 (7%)</option>
+                                <option value="M" selected>中 (15%)</option>
+                                <option value="Q">较高 (25%)</option>
+                                <option value="H">高 (30%)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="option-item">
+                            <label>前景色</label>
+                            <div class="color-option">
+                                <input type="color" id="foregroundColor" value="#000000" onchange="generateQRCode()">
+                                <span class="color-hex" id="foregroundHex">#000000</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-item">
+                            <label>背景色</label>
+                            <div class="color-option">
+                                <input type="color" id="backgroundColor" value="#ffffff" onchange="generateQRCode()">
+                                <span class="color-hex" id="backgroundHex">#ffffff</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="generate-btn" onclick="generateQRCode()">🔄 生成二维码</button>
+                </div>
+
+                <!-- 快捷操作 -->
+                <div class="input-section">
+                    <div class="input-title">⚡ 快捷操作</div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="action-btn" onclick="clearInput()">🗑️ 清空</button>
+                        <button class="action-btn" onclick="copyToClipboard()">📋 复制</button>
+                        <button class="action-btn" onclick="pasteFromClipboard()">📌 粘贴</button>
+                        <button class="action-btn" onclick="loadSample()">📝 示例</button>
+                        <button class="action-btn" onclick="randomColors()">🎨 随机颜色</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧预览区 -->
+            <div class="right-panel">
+                <div class="preview-section">
+                    <div class="preview-title">👁️ 二维码预览</div>
+                    <div class="qr-preview" id="qrPreview">
+                        <div class="qr-placeholder" id="qrPlaceholder">
+                            输入内容后将自动生成二维码
+                        </div>
+                        <canvas id="qrCanvas" style="display: none;"></canvas>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="download-btn" onclick="downloadQRCode('png')" id="downloadPng">📥 PNG</button>
+                        <button class="download-btn" onclick="downloadQRCode('jpg')" id="downloadJpg">📥 JPG</button>
+                        <button class="download-btn" onclick="downloadQRCode('svg')" id="downloadSvg">📥 SVG</button>
+                    </div>
+                </div>
+
+                <!-- 历史记录 -->
+                <div class="history-section">
+                    <div class="history-title">
+                        <span>📜 历史记录</span>
+                        <button class="action-btn" onclick="clearHistory()" style="padding: 4px 8px; font-size: 11px;">清空</button>
+                    </div>
+                    <ul class="history-list" id="historyList">
+                        <li class="empty-history">暂无生成历史</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="bottom-actions">
+            <button class="action-btn primary" onclick="generateQRCode()">🔄 重新生成</button>
+            <button class="action-btn" onclick="resetAll()">🔄 重置所有</button>
         </div>
     </div>
     
     <script>
-        let qrCodeInstance = null;
+        let history = JSON.parse(localStorage.getItem('qrHistory')) || [];
+        let autoGenerateTimeout = null;
         
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            generateQRCode();
+            // 初始化时钟
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            // 初始化主题
+            initTheme();
+            
+            // 初始化颜色显示
             updateColorHex();
+            
+            // 初始化历史记录
+            renderHistory();
+            
+            // 生成初始二维码
+            generateQRCode();
+            
+            // 绑定键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                // Ctrl+Enter 生成二维码
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    generateQRCode();
+                }
+                
+                // Esc 清空输入
+                if (e.key === 'Escape') {
+                    clearInput();
+                }
+            });
         });
+        
+        // 时钟功能
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+            
+            const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const y = now.getFullYear();
+            const mo = now.getMonth() + 1;
+            const d = now.getDate();
+            document.getElementById('clockDate').textContent = `${y}年${mo}月${d}日 ${weekDays[now.getDay()]}`;
+        }
+        
+        // 主题切换功能
+        let isDark = true;
+        
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                setTheme(true);
+            }
+        }
+        
+        function setTheme(light) {
+            isDark = !light;
+            document.documentElement.classList.toggle('light', light);
+            const themeBtn = document.getElementById('themeBtn');
+            if (themeBtn) {
+                themeBtn.textContent = light ? '☀️' : '🌙';
+                themeBtn.title = light ? '切换到深色模式' : '切换到浅色模式';
+            }
+            localStorage.setItem('theme', light ? 'light' : 'dark');
+        }
+        
+        function toggleTheme() {
+            setTheme(isDark);
+        }
+        
+        // 自动生成功能
+        function autoGenerate() {
+            clearTimeout(autoGenerateTimeout);
+            autoGenerateTimeout = setTimeout(() => {
+                const text = document.getElementById('qrInput').value.trim();
+                if (text) {
+                    generateQRCode();
+                }
+            }, 500);
+        }
         
         // 生成二维码
         function generateQRCode() {
@@ -371,6 +817,7 @@
             if (!text) {
                 document.getElementById('qrCanvas').style.display = 'none';
                 document.getElementById('qrPlaceholder').style.display = 'block';
+                updateDownloadButtons(true);
                 return;
             }
             
@@ -392,24 +839,42 @@
                 errorCorrectionLevel: errorLevel
             }, function(error) {
                 if (error) {
-                    console.error(error);
+                    console.error('生成二维码失败:', error);
                     alert('生成二维码失败: ' + error.message);
                     return;
                 }
                 
                 canvas.style.display = 'block';
                 placeholder.style.display = 'none';
+                updateDownloadButtons(false);
+                
+                // 添加到历史记录
+                addToHistory(text, canvas);
             });
             
             updateColorHex();
         }
         
+        // 更新下载按钮状态
+        function updateDownloadButtons(disabled) {
+            document.getElementById('downloadPng').disabled = disabled;
+            document.getElementById('downloadJpg').disabled = disabled;
+            document.getElementById('downloadSvg').disabled = disabled;
+        }
+        
         // 更新颜色十六进制显示
         function updateColorHex() {
-            document.getElementById('foregroundHex').textContent = 
-                document.getElementById('foregroundColor').value;
-            document.getElementById('backgroundHex').textContent = 
-                document.getElementById('backgroundColor').value;
+            const foregroundHex = document.getElementById('foregroundHex');
+            const backgroundHex = document.getElementById('backgroundHex');
+            const foregroundColor = document.getElementById('foregroundColor');
+            const backgroundColor = document.getElementById('backgroundColor');
+            
+            if (foregroundHex && foregroundColor) {
+                foregroundHex.textContent = foregroundColor.value;
+            }
+            if (backgroundHex && backgroundColor) {
+                backgroundHex.textContent = backgroundColor.value;
+            }
         }
         
         // 下载二维码
@@ -433,8 +898,17 @@
                     filename += '.jpg';
                     break;
                 case 'svg':
-                    // SVG需要特殊处理，这里简化处理
-                    alert('SVG格式需要额外处理，建议使用PNG格式');
+                    // 对于SVG，我们需要创建一个SVG版本
+                    const svgData = createSVGFromCanvas(canvas);
+                    const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+                    const svgUrl = URL.createObjectURL(svgBlob);
+                    
+                    const svgLink = document.createElement('a');
+                    svgLink.download = filename + '.svg';
+                    svgLink.href = svgUrl;
+                    svgLink.click();
+                    
+                    URL.revokeObjectURL(svgUrl);
                     return;
             }
             
@@ -444,52 +918,222 @@
             link.click();
         }
         
+        // 从Canvas创建SVG
+        function createSVGFromCanvas(canvas) {
+            const width = canvas.width;
+            const height = canvas.height;
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            
+            let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
+            svg += `<rect width="${width}" height="${height}" fill="white"/>`;
+            // 简单的SVG转换（仅用于演示）
+            for (let y = 0; y < height; y += 4) {
+                for (let x = 0; x < width; x += 4) {
+                    const idx = (y * width + x) * 4;
+                    const r = data[idx];
+                    const g = data[idx + 1];
+                    const b = data[idx + 2];
+                    if (r < 128 || g < 128 || b < 128) {
+                        svg += `<rect x="${x}" y="${y}" width="4" height="4" fill="black"/>`;
+                    }
+                }
+            }
+            svg += '</svg>';
+            return svg;
+        }
+        
+        // 复制到剪贴板
+        async function copyToClipboard() {
+            const canvas = document.getElementById('qrCanvas');
+            if (!canvas || canvas.style.display === 'none') {
+                alert('请先生成二维码');
+                return;
+            }
+            
+            try {
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        'image/png': blob
+                    })
+                ]);
+                alert('已复制到剪贴板！');
+            } catch (err) {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动右键保存图片');
+            }
+        }
+        
+        // 从剪贴板粘贴
+        async function pasteFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text) {
+                    document.getElementById('qrInput').value = text;
+                    generateQRCode();
+                }
+            } catch (err) {
+                console.error('粘贴失败:', err);
+                alert('粘贴失败，请手动输入内容');
+            }
+        }
+        
+        // 清空输入
+        function clearInput() {
+            document.getElementById('qrInput').value = '';
+            document.getElementById('qrCanvas').style.display = 'none';
+            document.getElementById('qrPlaceholder').style.display = 'block';
+            updateDownloadButtons(true);
+        }
+        
+        // 加载示例
+        function loadSample() {
+            const samples = [
+                'https://github.com/juhao7/tools-website',
+                'https://example.com',
+                'mailto:test@example.com',
+                'tel:+8613800138000',
+                'WIFI:T:WPA;S:MyNetwork;P:MyPassword;;',
+                '这是一段示例文本内容'
+            ];
+            
+            const randomSample = samples[Math.floor(Math.random() * samples.length)];
+            document.getElementById('qrInput').value = randomSample;
+            generateQRCode();
+        }
+        
+        // 随机颜色
+        function randomColors() {
+            const randomColor = () => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+            
+            document.getElementById('foregroundColor').value = randomColor();
+            document.getElementById('backgroundColor').value = randomColor();
+            updateColorHex();
+            generateQRCode();
+        }
+        
+        // 重置所有
+        function resetAll() {
+            document.getElementById('qrInput').value = 'https://example.com';
+            document.getElementById('qrSize').value = '300';
+            document.getElementById('errorLevel').value = 'M';
+            document.getElementById('foregroundColor').value = '#000000';
+            document.getElementById('backgroundColor').value = '#ffffff';
+            updateColorHex();
+            generateQRCode();
+        }
+        
         // 加载预设模板
         function loadPreset(type) {
             let text = '';
+            let name = '';
             
             switch (type) {
                 case 'website':
                     text = 'https://example.com';
+                    name = '网站链接';
                     break;
                 case 'email':
                     text = 'mailto:example@email.com';
+                    name = '电子邮件';
                     break;
                 case 'phone':
                     text = 'tel:+8613800138000';
+                    name = '电话号码';
                     break;
                 case 'sms':
                     text = 'sms:+8613800138000';
+                    name = '短信';
                     break;
                 case 'wifi':
                     text = 'WIFI:T:WPA;S:MyNetwork;P:MyPassword;;';
+                    name = 'WiFi连接';
                     break;
                 case 'text':
                     text = '这是一段示例文本内容';
+                    name = '纯文本';
+                    break;
+                case 'wechat':
+                    text = 'weixin://dl/chat';
+                    name = '微信';
+                    break;
+                case 'alipay':
+                    text = 'alipays://platformapi/startapp?appId=20000067&url=https://example.com';
+                    name = '支付宝';
                     break;
             }
             
             document.getElementById('qrInput').value = text;
+            
+            // 更新活动状态
+            document.querySelectorAll('.preset-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
             generateQRCode();
         }
         
-        // 主题切换
-        let isDark = true;
-        
-        function setTheme(light) {
-            isDark = !light;
-            document.documentElement.classList.toggle('light', light);
-            document.querySelector('.tool-btn').textContent = light ? '☀️' : '🌙';
-            localStorage.setItem('theme', light ? 'light' : 'dark');
+        // 添加到历史记录
+        function addToHistory(text, canvas) {
+            const historyItem = {
+                text: text,
+                time: new Date().toLocaleString(),
+                imageData: canvas.toDataURL('image/png')
+            };
+            
+            history.unshift(historyItem);
+            
+            // 保留最近10条记录
+            if (history.length > 10) {
+                history = history.slice(0, 10);
+            }
+            
+            localStorage.setItem('qrHistory', JSON.stringify(history));
+            renderHistory();
         }
         
-        function toggleTheme() {
-            setTheme(isDark);
+        // 渲染历史记录
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<li class="empty-history">暂无生成历史</li>';
+                return;
+            }
+            
+            historyList.innerHTML = history.map((item, index) => `
+                <li class="history-item" onclick="loadFromHistory(${index})">
+                    <div class="history-thumb">
+                        <img src="${item.imageData}" alt="QR Code" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
+                    <div class="history-info">
+                        <div class="history-text">${item.text}</div>
+                        <div class="history-time">${item.time}</div>
+                    </div>
+                </li>
+            `).join('');
         }
         
-        // 初始化主题
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') setTheme(true);
+        // 从历史记录加载
+        function loadFromHistory(index) {
+            const item = history[index];
+            if (item) {
+                document.getElementById('qrInput').value = item.text;
+                generateQRCode();
+            }
+        }
+        
+        // 清空历史记录
+        function clearHistory() {
+            if (confirm('确定要清空所有历史记录吗？')) {
+                history = [];
+                localStorage.removeItem('qrHistory');
+                renderHistory();
+            }
+        }
     </script>
 </body>
 </html>

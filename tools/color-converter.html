@@ -7,12 +7,73 @@
     <title>颜色转换器 - 实用工具箱</title>
     <link rel="stylesheet" href="../css/base.css">
     <style>
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: rgba(255,255,255,0.05);
+            --bg-card: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.1);
+            --text-primary: #fff;
+            --text-secondary: rgba(255,255,255,0.7);
+            --text-muted: rgba(255,255,255,0.4);
+            --accent: #7c5cff;
+            --accent-light: rgba(124, 92, 255, 0.2);
+            --success: #66bb6a;
+            --warning: #ffa726;
+            --danger: #ff6b6b;
+        }
+
+        :root.light {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: rgba(0,0,0,0.04);
+            --bg-card: rgba(255,255,255,0.95);
+            --border: rgba(0,0,0,0.08);
+            --text-primary: #1a1a2e;
+            --text-secondary: rgba(0,0,0,0.65);
+            --text-muted: rgba(0,0,0,0.35);
+            --accent: #6c4cff;
+            --accent-light: rgba(108, 76, 255, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            min-height: 100vh;
+            background: var(--bg-primary);
             padding: 20px;
+            transition: background 0.3s;
         }
         
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        /* 时钟区域 */
+        .clock-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .clock-time {
+            font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
+            font-size: 3rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            letter-spacing: 4px;
+        }
+        
+        .clock-date {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+        
+        /* 头部 */
         .header {
             display: flex;
             justify-content: space-between;
@@ -20,176 +81,552 @@
             margin-bottom: 30px;
         }
         
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .tool-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .tool-btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+        
+        /* 颜色预览区域 */
+        .preview-section {
+            display: grid;
+            grid-template-columns: 1fr 200px;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
         .color-preview {
             width: 100%;
-            height: 200px;
+            height: 160px;
             border-radius: 16px;
-            margin-bottom: 30px;
             border: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .preview-text {
             font-size: 1.5rem;
+            font-weight: 600;
             color: white;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
         
+        .preview-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .action-card {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .action-card:hover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+            transform: translateY(-1px);
+        }
+        
+        .color-picker-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .color-picker-card input[type="color"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .random-card {
+            background: linear-gradient(135deg, #7c5cff, #ff6b6b, #ffa726, #66bb6a);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        /* 颜色输入区 */
         .color-inputs {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
         }
         
         .input-group {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 20px;
         }
         
         .input-label {
-            display: block;
-            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
             color: var(--text-secondary);
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 10px;
         }
         
         .color-input {
-            width: 100%;
+            flex: 1;
             padding: 12px 15px;
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 10px;
             color: var(--text-primary);
-            font-size: 16px;
-            font-family: monospace;
+            font-size: 14px;
+            font-family: "SF Mono", "JetBrains Mono", Consolas, monospace;
             outline: none;
+            transition: border-color 0.2s;
         }
         
         .color-input:focus {
             border-color: var(--accent);
         }
         
-        .color-picker-wrapper {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .color-picker {
-            width: 50px;
-            height: 50px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        
-        .presets {
-            margin-bottom: 30px;
-        }
-        
-        .preset-title {
-            font-size: 1.2rem;
-            color: var(--text-primary);
-            margin-bottom: 15px;
-        }
-        
-        .preset-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 10px;
-        }
-        
-        .preset-color {
-            width: 100%;
-            height: 60px;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: transform 0.2s;
-        }
-        
-        .preset-color:hover {
-            transform: scale(1.05);
-            border-color: var(--accent);
-        }
-        
-        .copy-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+        .color-input::placeholder {
+            color: var(--text-muted);
         }
         
         .copy-btn {
-            flex: 1;
-            min-width: 120px;
-            padding: 12px;
-            border: 1px solid var(--border);
+            padding: 12px 16px;
             border-radius: 10px;
-            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            background: var(--bg-card);
             color: var(--text-primary);
             font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         
         .copy-btn:hover {
             border-color: var(--accent);
             background: var(--accent-light);
         }
+        
+        .copy-btn.copied {
+            border-color: var(--success);
+            background: rgba(102, 187, 106, 0.2);
+            color: var(--success);
+        }
+        
+        .input-hint {
+            margin-top: 10px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+        
+        /* 颜色搭配区域 */
+        .harmony-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .harmony-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .harmony-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .harmony-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .harmony-tab {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .harmony-tab:hover {
+            border-color: var(--accent);
+        }
+        
+        .harmony-tab.active {
+            border-color: var(--accent);
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+        
+        .harmony-preview {
+            display: flex;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 80px;
+            margin-bottom: 15px;
+        }
+        
+        .harmony-color {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .harmony-color:hover {
+            flex: 1.2;
+        }
+        
+        .harmony-color::after {
+            content: '点击使用';
+            position: absolute;
+            bottom: 5px;
+            font-size: 10px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .harmony-color:hover::after {
+            opacity: 1;
+        }
+        
+        .harmony-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .harmony-item {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .harmony-item:hover {
+            background: var(--accent-light);
+        }
+        
+        .harmony-item-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            margin: 0 auto 8px;
+            border: 1px solid var(--border);
+        }
+        
+        .harmony-item-hex {
+            font-size: 12px;
+            font-family: monospace;
+            color: var(--text-primary);
+        }
+        
+        .harmony-item-name {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        /* 预设颜色 */
+        .presets-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .presets-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .presets-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+        }
+        
+        .preset-color {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .preset-color:hover {
+            transform: scale(1.1);
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        /* 提示消息 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .clock-time {
+                font-size: 2rem;
+            }
+            
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .preview-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .preview-actions {
+                flex-direction: row;
+            }
+            
+            .color-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .harmony-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 5px;
+            }
+            
+            .harmony-tab {
+                white-space: nowrap;
+            }
+            
+            .preset-grid {
+                grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .clock-time {
+                font-size: 1.8rem;
+            }
+            
+            .input-row {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- 时钟区域 -->
+        <div class="clock-section">
+            <div class="clock-time" id="clock">00:00:00</div>
+            <div class="clock-date" id="clockDate"></div>
+        </div>
+        
+        <!-- 头部 -->
         <div class="header">
             <h1>🎨 颜色转换器</h1>
-            <button class="tool-btn" onclick="toggleTheme()">🌙</button>
+            <div class="header-actions">
+                <button class="tool-btn" onclick="toggleTheme()" id="themeBtn" title="切换主题">🌙</button>
+                <a href="../index.html" class="tool-btn" title="返回首页">🏠</a>
+            </div>
         </div>
         
-        <div class="color-preview" id="colorPreview">
-            <span id="previewText">选择颜色查看预览</span>
+        <!-- 颜色预览 + 操作区 -->
+        <div class="preview-section">
+            <div class="color-preview" id="colorPreview" style="background-color: #7c5cff;">
+                <span class="preview-text" id="previewText">#7c5cff</span>
+            </div>
+            <div class="preview-actions">
+                <div class="action-card color-picker-card">
+                    🎯 选择颜色
+                    <input type="color" id="colorPicker" value="#7c5cff" oninput="updateFromPicker()">
+                </div>
+                <div class="action-card random-card" onclick="randomColor()">
+                    🎲 随机颜色
+                </div>
+            </div>
         </div>
         
+        <!-- 颜色输入区 -->
         <div class="color-inputs">
+            <!-- HEX 输入 -->
             <div class="input-group">
-                <label class="input-label">HEX 颜色值</label>
-                <input type="text" class="color-input" id="hexInput" placeholder="#7c5cff" oninput="updateFromHex()">
-                <div class="color-picker-wrapper">
-                    <input type="color" class="color-picker" id="colorPicker" value="#7c5cff" oninput="updateFromPicker()">
-                    <button class="action-btn" onclick="randomColor()">随机颜色</button>
+                <label class="input-label">📝 HEX 颜色值</label>
+                <div class="input-row">
+                    <input type="text" class="color-input" id="hexInput" placeholder="#7c5cff" oninput="updateFromHex()">
+                    <button class="copy-btn" onclick="copyColor('hex')">📋</button>
                 </div>
             </div>
             
+            <!-- RGB 输入 -->
             <div class="input-group">
-                <label class="input-label">RGB 颜色值</label>
-                <input type="text" class="color-input" id="rgbInput" placeholder="rgb(124, 92, 255)" oninput="updateFromRgb()">
-                <div style="margin-top: 10px; color: var(--text-muted); font-size: 14px;">
-                    格式: rgb(红, 绿, 蓝) 或 rgba(红, 绿, 蓝, 透明度)
+                <label class="input-label">🔢 RGB 颜色值</label>
+                <div class="input-row">
+                    <input type="text" class="color-input" id="rgbInput" placeholder="rgb(124, 92, 255)" oninput="updateFromRgb()">
+                    <button class="copy-btn" onclick="copyColor('rgb')">📋</button>
                 </div>
+                <div class="input-hint">格式: rgb(红, 绿, 蓝)</div>
             </div>
             
+            <!-- HSL 输入 -->
             <div class="input-group">
-                <label class="input-label">HSL 颜色值</label>
-                <input type="text" class="color-input" id="hslInput" placeholder="hsl(249, 100%, 68%)" oninput="updateFromHsl()">
-                <div style="margin-top: 10px; color: var(--text-muted); font-size: 14px;">
-                    格式: hsl(色相, 饱和度%, 亮度%)
+                <label class="input-label">🎯 HSL 颜色值</label>
+                <div class="input-row">
+                    <input type="text" class="color-input" id="hslInput" placeholder="hsl(249, 100%, 68%)" oninput="updateFromHsl()">
+                    <button class="copy-btn" onclick="copyColor('hsl')">📋</button>
                 </div>
+                <div class="input-hint">格式: hsl(色相, 饱和度%, 亮度%)</div>
             </div>
         </div>
         
-        <div class="copy-buttons">
-            <button class="copy-btn" onclick="copyColor('hex')">复制 HEX</button>
-            <button class="copy-btn" onclick="copyColor('rgb')">复制 RGB</button>
-            <button class="copy-btn" onclick="copyColor('hsl')">复制 HSL</button>
+        <!-- 颜色搭配 -->
+        <div class="harmony-section">
+            <div class="harmony-header">
+                <div class="harmony-title">🎨 颜色搭配</div>
+            </div>
+            <div class="harmony-tabs">
+                <button class="harmony-tab active" onclick="setHarmony('complementary')">互补色</button>
+                <button class="harmony-tab" onclick="setHarmony('analogous')">类似色</button>
+                <button class="harmony-tab" onclick="setHarmony('triadic')">三角色</button>
+                <button class="harmony-tab" onclick="setHarmony('split')">分裂互补</button>
+                <button class="harmony-tab" onclick="setHarmony('tetradic')">四角色</button>
+                <button class="harmony-tab" onclick="setHarmony('monochromatic')">单色系</button>
+            </div>
+            <div class="harmony-preview" id="harmonyPreview"></div>
+            <div class="harmony-info" id="harmonyInfo"></div>
         </div>
         
-        <div class="presets">
-            <div class="preset-title">常用颜色</div>
+        <!-- 预设颜色 -->
+        <div class="presets-section">
+            <div class="presets-header">
+                <div class="presets-title">🎨 常用颜色</div>
+                <div style="font-size: 12px; color: var(--text-muted);">点击选择</div>
+            </div>
             <div class="preset-grid" id="presetGrid"></div>
         </div>
+        
+        <!-- 页脚 -->
+        <div class="footer">
+            <p>© 2024 实用工具箱 - 颜色转换器</p>
+            <p style="margin-top: 5px;">快捷键: Ctrl+Shift+T 切换主题</p>
+        </div>
     </div>
+    
+    <!-- 提示消息 -->
+    <div class="toast" id="toast"></div>
     
     <script>
         // 预设颜色
@@ -197,7 +634,8 @@
             '#FF0000', '#FF4500', '#FF6347', '#FF7F50', '#FFA500',
             '#FFD700', '#FFFF00', '#ADFF2F', '#7FFF00', '#00FF00',
             '#00FA9A', '#00FFFF', '#00BFFF', '#1E90FF', '#0000FF',
-            '#8A2BE2', '#9400D3', '#FF00FF', '#FF1493', '#FF69B4'
+            '#8A2BE2', '#9400D3', '#FF00FF', '#FF1493', '#FF69B4',
+            '#7c5cff', '#66bb6a', '#ffa726', '#ff6b6b', '#2196F3'
         ];
         
         let currentColor = {
@@ -209,6 +647,23 @@
             s: 100,
             l: 68
         };
+        
+        let currentHarmony = 'complementary';
+        
+        // 时钟功能
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+            
+            const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const y = now.getFullYear();
+            const mo = now.getMonth() + 1;
+            const d = now.getDate();
+            document.getElementById('clockDate').textContent = `${y}年${mo}月${d}日 ${weekDays[now.getDay()]}`;
+        }
         
         // 初始化预设颜色
         function initPresets() {
@@ -223,18 +678,17 @@
         function selectPreset(hex) {
             document.getElementById('hexInput').value = hex;
             updateFromHex();
+            showToast('✅ 已选择颜色: ' + hex);
         }
         
         // 从HEX更新
         function updateFromHex() {
             let hex = document.getElementById('hexInput').value.trim();
             
-            // 自动补全#
             if (hex && !hex.startsWith('#')) {
                 hex = '#' + hex;
             }
             
-            // 验证HEX格式
             if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
                 currentColor.hex = hex;
                 const rgb = hexToRgb(hex);
@@ -249,6 +703,7 @@
                 
                 updateAllInputs();
                 updatePreview();
+                updateHarmony();
                 document.getElementById('colorPicker').value = hex;
             }
         }
@@ -278,6 +733,7 @@
                     
                     updateAllInputs();
                     updatePreview();
+                    updateHarmony();
                     document.getElementById('colorPicker').value = hex;
                 }
             }
@@ -308,6 +764,7 @@
                     
                     updateAllInputs();
                     updatePreview();
+                    updateHarmony();
                     document.getElementById('colorPicker').value = hex;
                 }
             }
@@ -335,9 +792,110 @@
             preview.style.backgroundColor = currentColor.hex;
             previewText.textContent = currentColor.hex;
             
-            // 根据背景色亮度调整文字颜色
             const brightness = (currentColor.r * 299 + currentColor.g * 587 + currentColor.b * 114) / 1000;
             previewText.style.color = brightness > 128 ? '#000000' : '#ffffff';
+        }
+        
+        // 设置搭配方案
+        function setHarmony(type) {
+            currentHarmony = type;
+            
+            // 更新标签状态
+            document.querySelectorAll('.harmony-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            updateHarmony();
+        }
+        
+        // 更新颜色搭配
+        function updateHarmony() {
+            const colors = getHarmonyColors(currentColor.h, currentColor.s, currentColor.l, currentHarmony);
+            
+            // 更新预览条
+            const preview = document.getElementById('harmonyPreview');
+            preview.innerHTML = colors.map(c => {
+                const hex = hslToHex(c.h, c.s, c.l);
+                return `<div class="harmony-color" style="background-color: ${hex}" 
+                            onclick="selectHarmonyColor('${hex}')"
+                            title="${hex}">${hex}</div>`;
+            }).join('');
+            
+            // 更新信息
+            const info = document.getElementById('harmonyInfo');
+            const names = getHarmonyNames(currentHarmony);
+            info.innerHTML = colors.map((c, i) => {
+                const hex = hslToHex(c.h, c.s, c.l);
+                return `<div class="harmony-item" onclick="selectHarmonyColor('${hex}')">
+                    <div class="harmony-item-color" style="background-color: ${hex}"></div>
+                    <div class="harmony-item-hex">${hex}</div>
+                    <div class="harmony-item-name">${names[i] || ''}</div>
+                </div>`;
+            }).join('');
+        }
+        
+        // 获取搭配颜色
+        function getHarmonyColors(h, s, l, type) {
+            const colors = [{ h, s, l }];
+            
+            switch (type) {
+                case 'complementary':
+                    colors.push({ h: (h + 180) % 360, s, l });
+                    break;
+                    
+                case 'analogous':
+                    colors.push({ h: (h + 30) % 360, s, l });
+                    colors.push({ h: (h + 60) % 360, s, l });
+                    colors.push({ h: (h - 30 + 360) % 360, s, l });
+                    colors.push({ h: (h - 60 + 360) % 360, s, l });
+                    break;
+                    
+                case 'triadic':
+                    colors.push({ h: (h + 120) % 360, s, l });
+                    colors.push({ h: (h + 240) % 360, s, l });
+                    break;
+                    
+                case 'split':
+                    colors.push({ h: (h + 150) % 360, s, l });
+                    colors.push({ h: (h + 210) % 360, s, l });
+                    break;
+                    
+                case 'tetradic':
+                    colors.push({ h: (h + 90) % 360, s, l });
+                    colors.push({ h: (h + 180) % 360, s, l });
+                    colors.push({ h: (h + 270) % 360, s, l });
+                    break;
+                    
+                case 'monochromatic':
+                    colors.push({ h, s, l: Math.min(l + 20, 100) });
+                    colors.push({ h, s, l: Math.min(l + 40, 100) });
+                    colors.push({ h, s, l: Math.max(l - 20, 0) });
+                    colors.push({ h, s, l: Math.max(l - 40, 0) });
+                    break;
+            }
+            
+            return colors;
+        }
+        
+        // 获取搭配名称
+        function getHarmonyNames(type) {
+            switch (type) {
+                case 'complementary': return ['主色', '互补色'];
+                case 'analogous': return ['主色', '类似色1', '类似色2', '类似色3', '类似色4'];
+                case 'triadic': return ['主色', '三角1', '三角2'];
+                case 'split': return ['主色', '分裂1', '分裂2'];
+                case 'tetradic': return ['主色', '四方1', '四方2', '四方3'];
+                case 'monochromatic': return ['主色', '亮色1', '亮色2', '暗色1', '暗色2'];
+                default: return [];
+            }
+        }
+        
+        // 选择搭配颜色
+        function selectHarmonyColor(hex) {
+            document.getElementById('hexInput').value = hex;
+            updateFromHex();
+            showToast('✅ 已选择: ' + hex);
         }
         
         // 随机颜色
@@ -345,28 +903,58 @@
             const hex = '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
             document.getElementById('hexInput').value = hex;
             updateFromHex();
+            showToast('🎲 随机颜色: ' + hex);
         }
         
         // 复制颜色值
         function copyColor(format) {
             let value;
             switch (format) {
-                case 'hex':
-                    value = currentColor.hex;
-                    break;
-                case 'rgb':
-                    value = `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`;
-                    break;
-                case 'hsl':
-                    value = `hsl(${currentColor.h}, ${currentColor.s}%, ${currentColor.l}%)`;
-                    break;
+                case 'hex': value = currentColor.hex; break;
+                case 'rgb': value = `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`; break;
+                case 'hsl': value = `hsl(${currentColor.h}, ${currentColor.s}%, ${currentColor.l}%)`; break;
             }
             
             navigator.clipboard.writeText(value).then(() => {
-                alert(`已复制: ${value}`);
-            }).catch(err => {
-                alert('复制失败: ' + err.message);
+                showCopySuccess();
+                showToast('✅ 已复制: ' + value);
+            }).catch(() => {
+                const textArea = document.createElement('textarea');
+                textArea.value = value;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showCopySuccess();
+                showToast('✅ 已复制: ' + value);
             });
+            
+            function showCopySuccess() {
+                const btn = event.target.closest('.copy-btn');
+                btn.classList.add('copied');
+                btn.innerHTML = '✅';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '📋';
+                }, 1500);
+            }
+        }
+        
+        // HSL 转 HEX
+        function hslToHex(h, s, l) {
+            const rgb = hslToRgb(h, s, l);
+            return rgbToHex(rgb.r, rgb.g, rgb.b);
+        }
+        
+        // 显示提示消息
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
         }
         
         // 颜色转换函数
@@ -455,7 +1043,11 @@
         function setTheme(light) {
             isDark = !light;
             document.documentElement.classList.toggle('light', light);
-            document.querySelector('.tool-btn').textContent = light ? '☀️' : '🌙';
+            const themeBtn = document.getElementById('themeBtn');
+            if (themeBtn) {
+                themeBtn.textContent = light ? '☀️' : '🌙';
+                themeBtn.title = light ? '切换到深色模式' : '切换到浅色模式';
+            }
             localStorage.setItem('theme', light ? 'light' : 'dark');
         }
         
@@ -464,11 +1056,23 @@
         }
         
         // 初始化
-        initPresets();
-        updateFromHex();
-        
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') setTheme(true);
+        document.addEventListener('DOMContentLoaded', function() {
+            updateClock();
+            setInterval(updateClock, 1000);
+            
+            initPresets();
+            updateFromHex();
+            
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') setTheme(true);
+            
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+                    e.preventDefault();
+                    toggleTheme();
+                }
+            });
+        });
     </script>
 </body>
 </html>

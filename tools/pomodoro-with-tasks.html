@@ -571,6 +571,173 @@
             color: var(--accent);
         }
 
+        /* 设置弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 {
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal h3::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+        }
+
+        .form-group .input-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .form-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .form-options .opt-btn {
+            flex: 1;
+            text-align: center;
+            min-width: 80px;
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .form-options .opt-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-secondary);
+        }
+
+        .form-options .opt-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .modal-btn.primary {
+            background: var(--accent);
+            border-color: transparent;
+            color: white;
+        }
+
+        .modal-btn.primary:hover {
+            box-shadow: 0 4px 15px rgba(124, 92, 255, 0.4);
+        }
+
+        /* 设置按钮 */
+        .settings-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .settings-btn:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
         /* 历史记录 */
         .history-section {
             background: var(--bg-card);
@@ -734,6 +901,12 @@
                 height: 38px;
                 font-size: 16px;
             }
+            
+            .settings-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
         }
 
         @media (max-width: 480px) {
@@ -765,6 +938,15 @@
             
             .task-meta {
                 justify-content: center;
+            }
+            
+            .modal {
+                width: 95%;
+                padding: 20px;
+            }
+            
+            .form-options {
+                flex-direction: column;
             }
         }
     </style>
@@ -806,6 +988,9 @@
                     </button>
                     <button class="control-btn" id="skipBtn" title="跳过">
                         ⏭️
+                    </button>
+                    <button class="settings-btn" id="settingsBtn" title="设置">
+                        ⚙️
                     </button>
                 </div>
             </div>
@@ -915,6 +1100,50 @@
         </div>
     </div>
 
+    <!-- 设置弹窗 -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <h3>⚙️ 时间设置</h3>
+            
+            <div class="form-group">
+                <label>工作时间（分钟）</label>
+                <input type="number" id="workTimeInput" min="1" max="120" value="25">
+                <div class="input-hint">建议设置为25分钟，这是番茄工作法的标准时间</div>
+            </div>
+            
+            <div class="form-group">
+                <label>短休息时间（分钟）</label>
+                <input type="number" id="breakTimeInput" min="1" max="30" value="5">
+                <div class="input-hint">建议设置为5分钟，短暂休息有助于恢复精力</div>
+            </div>
+            
+            <div class="form-group">
+                <label>长休息时间（分钟）</label>
+                <input type="number" id="longBreakTimeInput" min="1" max="60" value="15">
+                <div class="input-hint">建议设置为15分钟，长时间工作后需要充分休息</div>
+            </div>
+            
+            <div class="form-group">
+                <label>长休息间隔（番茄数）</label>
+                <input type="number" id="longBreakIntervalInput" min="2" max="10" value="4">
+                <div class="input-hint">建议设置为4，每完成4个番茄后进入长休息</div>
+            </div>
+            
+            <div class="form-group">
+                <label>声音提示</label>
+                <div class="form-options">
+                    <button class="opt-btn active" data-sound="true" onclick="selectSoundOption(this)">开启</button>
+                    <button class="opt-btn" data-sound="false" onclick="selectSoundOption(this)">关闭</button>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn" onclick="closeModal('settingsModal')">取消</button>
+                <button class="modal-btn primary" onclick="saveSettings()">保存设置</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 番茄钟应用状态
         const pomodoroApp = {
@@ -969,6 +1198,7 @@
                 startPauseBtn: document.getElementById('startPauseBtn'),
                 resetBtn: document.getElementById('resetBtn'),
                 skipBtn: document.getElementById('skipBtn'),
+                settingsBtn: document.getElementById('settingsBtn'),
                 completedPomodoros: document.getElementById('completedPomodoros'),
                 currentSet: document.getElementById('currentSet'),
                 totalFocusTime: document.getElementById('totalFocusTime'),
@@ -991,6 +1221,7 @@
                 this.updateCurrentTaskDisplay();
                 this.renderHistory();
                 this.checkDateChange();
+                this.loadSettingsToUI();
                 
                 // 设置最后更新时间
                 this.elements.lastUpdate.textContent = new Date().toLocaleString();
@@ -1016,6 +1247,22 @@
             // 保存设置
             saveSettings: function() {
                 localStorage.setItem('pomodoroSettings', JSON.stringify(this.settings));
+            },
+            
+            // 加载设置到UI
+            loadSettingsToUI: function() {
+                document.getElementById('workTimeInput').value = this.settings.workTime;
+                document.getElementById('breakTimeInput').value = this.settings.breakTime;
+                document.getElementById('longBreakTimeInput').value = this.settings.longBreakTime;
+                document.getElementById('longBreakIntervalInput').value = this.settings.longBreakInterval;
+                
+                // 更新声音设置按钮
+                document.querySelectorAll('.form-options .opt-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.sound === String(this.settings.soundEnabled)) {
+                        btn.classList.add('active');
+                    }
+                });
             },
             
             // 加载统计
@@ -1064,6 +1311,11 @@
                 // 跳过按钮
                 this.elements.skipBtn.addEventListener('click', () => {
                     this.skipToNext();
+                });
+                
+                // 设置按钮
+                this.elements.settingsBtn.addEventListener('click', () => {
+                    this.openSettingsModal();
                 });
                 
                 // 清空历史记录
@@ -1379,6 +1631,57 @@
                 // 统计已经在updateDisplay中更新
             },
             
+            // 打开设置弹窗
+            openSettingsModal: function() {
+                // 暂停计时器（如果正在运行）
+                if (this.timerState.isRunning) {
+                    this.pauseTimer();
+                }
+                
+                // 加载当前设置到UI
+                this.loadSettingsToUI();
+                
+                // 显示弹窗
+                document.getElementById('settingsModal').classList.add('active');
+            },
+            
+            // 保存设置
+            saveSettingsToApp: function() {
+                // 获取UI中的值
+                const workTime = parseInt(document.getElementById('workTimeInput').value) || 25;
+                const breakTime = parseInt(document.getElementById('breakTimeInput').value) || 5;
+                const longBreakTime = parseInt(document.getElementById('longBreakTimeInput').value) || 15;
+                const longBreakInterval = parseInt(document.getElementById('longBreakIntervalInput').value) || 4;
+                
+                // 验证值范围
+                const validatedSettings = {
+                    workTime: Math.max(1, Math.min(120, workTime)),
+                    breakTime: Math.max(1, Math.min(30, breakTime)),
+                    longBreakTime: Math.max(1, Math.min(60, longBreakTime)),
+                    longBreakInterval: Math.max(2, Math.min(10, longBreakInterval))
+                };
+                
+                // 更新设置
+                this.settings = { ...this.settings, ...validatedSettings };
+                
+                // 保存设置
+                this.saveSettings();
+                
+                // 更新计时器（如果当前没有在运行）
+                if (!this.timerState.isRunning && !this.timerState.isPaused) {
+                    this.resetTimer();
+                }
+                
+                // 关闭弹窗
+                this.closeModal('settingsModal');
+                
+                // 更新显示
+                this.updateDisplay();
+                
+                // 显示保存成功提示
+                this.showNotification('设置已保存');
+            },
+            
             // 添加到历史记录
             addToHistory: function() {
                 if (!this.currentTask.name) return;
@@ -1444,6 +1747,17 @@
                 }
             },
             
+            // 关闭弹窗
+            closeModal: function(modalId) {
+                document.getElementById(modalId).classList.remove('active');
+            },
+            
+            // 显示通知
+            showNotification: function(message) {
+                // 简单实现，可以替换为更美观的通知组件
+                alert(message);
+            },
+            
             // 播放完成声音
             playCompletionSound: function() {
                 if (!this.settings.soundEnabled) return;
@@ -1482,12 +1796,26 @@
             btn.classList.add('active');
         }
 
+        function selectSoundOption(btn) {
+            document.querySelectorAll('.form-options .opt-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            pomodoroApp.settings.soundEnabled = btn.dataset.sound === 'true';
+        }
+
         function toggleNoteInput() {
             document.getElementById('noteInput').classList.toggle('show');
         }
 
         function setFocusTask() {
             pomodoroApp.setFocusTask();
+        }
+
+        function saveSettings() {
+            pomodoroApp.saveSettingsToApp();
+        }
+
+        function closeModal(modalId) {
+            pomodoroApp.closeModal(modalId);
         }
 
         // 主题切换功能
@@ -1518,6 +1846,13 @@
             
             // 初始化番茄钟应用
             pomodoroApp.init();
+            
+            // 为设置弹窗添加点击外部关闭功能
+            document.getElementById('settingsModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    pomodoroApp.closeModal('settingsModal');
+                }
+            });
         });
     </script>
 </body>
